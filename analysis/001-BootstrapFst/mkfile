@@ -18,7 +18,7 @@ results/%.dist.phylip:	results/%.par
 	set -x
 	mkdir -p `dirname ${target}`
 	smartpca \
-		-p par.test \
+		-p "results/"${stem}".par" \
 	&& mv "results/"${stem}".dist.phylip.build" "results/"${stem}".dist.phylip"
 
 #Generate the parfiles to execute eigensoft
