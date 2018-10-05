@@ -1,0 +1,18 @@
+## Alternative 1: Single target execution.
+##
+##
+## Alternative 2: Multiple target tandem execution.
+##      bin/targets | xargs mk
+##
+## Alternative 3: Multiple target parallel execution. NOTE: requires HTCondor.
+##      condor submit
+##
+## AUTHOR:
+##      Fernando Perez (fperez@inmegen.edu.mx) - 2018
+
+
+< ../config.mk
+
+#Generate the Phylyp distant matrix files
+results/%.set.vcf.gz:
+	set -x
