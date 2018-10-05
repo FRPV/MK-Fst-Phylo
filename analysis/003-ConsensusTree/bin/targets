@@ -1,0 +1,10 @@
+#! /bin/bash
+
+find -L data/ -name "*.tree.nwk" \
+	| rev \
+	| cut -d "_" -f 2- \
+	| rev \
+	| sort -u \
+	| sed -r \
+		-e "s#data/#results/#" \
+		-e "s/$/.consense.nwk/"

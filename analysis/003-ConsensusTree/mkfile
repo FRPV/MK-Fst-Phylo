@@ -1,0 +1,34 @@
+## Alternative 1: Single target execution.
+##
+## Alternative 2: Multiple target tandem execution.
+##      bin/targets | xargs mk
+##
+## Alternative 3: Multiple target parallel execution. NOTE: requires HTCondor.
+##      condor submit
+##
+## AUTHOR:
+##      Fernando Perez (fperez@inmegen.edu.mx) - 2018
+
+
+< ../config.mk
+
+#Execute eigensoft for each subset and generate the Fst distance matrix in phylip format
+results/%.consense.nwk:	results/%.in.tree
+	set -x
+	mkdir -p `dirname ${target}`
+	echo "${prereq}\nR\nY\n" \
+		| consense \
+	&& mv outtree ${target} \
+	&& mv outfile "results/"${stem}"_phylip"
+
+
+#Concatenate all the input newick trees in one separated by newlines, this will be the input for consensus
+results/%.in.tree:
+	set -x
+	mkdir -p `dirname ${target}`
+	for tree in `find -L data -name "*.tree.nwk"`
+	do
+		cat $tree >>${target}".build"
+		echo "\n" >>${target}".build"
+	done \
+	&& mv ${target}".build" ${target}
