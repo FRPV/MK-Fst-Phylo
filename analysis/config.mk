@@ -6,3 +6,6 @@ per="10"
 
 #Number of threads to use
 NT="1"
+
+#Outgroup number
+OUT="30"
