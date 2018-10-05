@@ -6,8 +6,12 @@ source ../config.mk
 
 for beds  in `find -L data/ -name *.bed | sed "s/.bed//"`
 do
-  if  [ -f ${beds}".bed" ] && [ -f ${beds}".bim" ]  && [ -f ${beds}".fam" ]
+  if  [ -f ${beds}".bed" ] && [ -f ${beds}".bim" ]  && [ -f ${beds}".pedind" ]
     then 
-      echo $beds
+      for i in `seq 1 $bots`
+	do
+	      bedsres=`echo $beds | sed "s#data/#results/#"`
+	      echo "${bedsres}_bs${i}.pedsnp"
+      done
   fi
 done
