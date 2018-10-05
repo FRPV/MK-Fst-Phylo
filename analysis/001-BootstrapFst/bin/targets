@@ -11,7 +11,7 @@ do
       for i in `seq 1 $bots`
 	do
 	      bedsres=`echo $beds | sed "s#data/#results/#"`
-	      echo "${bedsres}_bs${i}.pedsnp"
+	      echo "${bedsres}_bs${i}.dist.phylip"
       done
   fi
 done
