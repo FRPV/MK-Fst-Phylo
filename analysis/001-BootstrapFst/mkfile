@@ -13,6 +13,38 @@
 
 < ../config.mk
 
-#Generate the Phylyp distant matrix files
-results/%.set.vcf.gz:
+#Execute eigensoft for each subset and generate the Fst distance matrix in phylip format
+results/%.dist.phylip:	results/%.par
 	set -x
+	mkdir -p `dirname ${target}`
+	smartpca \
+		-p par.test \
+	&& mv "results/"${stem}".dist.phylip.build" "results/"${stem}".dist.phylip"
+
+#Generate the parfiles to execute eigensoft
+results/%.par:	results/%.pedsnp
+	set -x
+	mkdir -p `dirname ${target}`
+	input=`echo $stem | rev  | cut -d "_" -f 2- | rev`
+	cat bin/par.test \
+	     | sed -r \
+	        -e "s#test.bed#data/${input}.bed#" \
+		-e "s#test.pedsnp#${prereq}#" \
+		-e "s#91g.pedind#data/${input}.pedind#" \
+		-e "s#numthreads: 1#numthreads: $NT#" \
+		-e "s#test.phylip#results/${stem}.dist.phylip.build#" \
+	> ${target}
+
+#Generate the Phylyp distant matrix files
+results/%.pedsnp:
+	set -x
+	mkdir -p `dirname ${target}`
+	input=`echo $stem | rev  | cut -d "_" -f 2- | rev | sed "s/$/.bim/"`
+	totalsnps=`wc -l "data/"$input | cut -d " " -f 1`
+	setnumber=$((totalsnps / 10 ))
+	Rscript bin/random_get.R \
+		"data/"${input} \
+		${target}".build" \
+		${totalsnps} \
+		$setnumber \
+	&& mv ${target}".build" ${target}
