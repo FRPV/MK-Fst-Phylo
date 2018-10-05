@@ -1,0 +1,6 @@
+#! /bin/bash
+
+find -L data/ -name "*.dist.phylip" \
+	| sed -r \
+		-e "s#data/#results/#" \
+		-e "s/.dist.phylip/.tree.nwk/"
