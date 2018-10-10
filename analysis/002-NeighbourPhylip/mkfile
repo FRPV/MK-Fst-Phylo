@@ -14,10 +14,10 @@
 < ../config.mk
 
 #Execute eigensoft for each subset and generate the Fst distance matrix in phylip format
-results/%.dist.phylip:	results/%.par
+results/%.tree.nwk:
 	set -x
 	mkdir -p `dirname ${target}`
-	echo -e "data/"${stem}".dist.phylip\nO\n$OUT\ny\n" \
+	echo "data/"${stem}".dist.phylip\nO\n$OUT\ny\n" \
 		| neighbor \
-	&& mv outree ${target} \
+	&& mv outtree ${target} \
 	&& mv outfile "results/"${stem}"_phylip"
