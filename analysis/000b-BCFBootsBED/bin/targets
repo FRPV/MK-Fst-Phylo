@@ -1,0 +1,13 @@
+#! /bin/bash
+
+
+source ../config.mk
+
+for bcf  in `find -L data/ -name *.bcf | sed "s/\.bcf//"`
+do
+	for i in `seq 1 $bots`
+	do
+		bedsres=`echo $bcf | sed "s#data/#results/#"`
+		echo "${bedsres}_bs${i}.bed"
+	done
+done

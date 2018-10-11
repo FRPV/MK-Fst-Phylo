@@ -1,0 +1,69 @@
+## USAGE:
+## Alternative 1: Single target execution.
+##
+##
+## Alternative 2: Multiple target tandem execution.
+##      bin/targets | xargs mk
+##
+## Alternative 3: Multiple target parallel execution. NOTE: requires HTCondor.
+##      condor submit
+##
+## AUTHOR:
+##      Fernando Perez (frpvillatoro@gmail.com) - 2018
+
+
+
+< ../config.mk
+
+#Convert VCF input files into PLINK-BED binary files
+results/%.bed:	results/%.vcf
+	set -x
+	mkdir -p `dirname ${target}`
+	plink1.9 \
+		--vcf "results/"${stem}".vcf" \
+		--make-bed \
+		--allow-extra-chr \
+		--out "results/"${stem}".build" \
+	&& rm "results/"${stem}".vcf" \
+	&& for i in $(ls "results/"${stem}".build."*);\
+	   do name2=`echo ${i} | sed "s/.build//g"`;\
+	   mv ${i} ${name2};\
+	   done
+
+#Concat the header and the variant files and compresses it to bcf
+results/%.vcf:	results/%.header	results/%.vars
+	set -x
+	mkdir -p `dirname ${target}`
+	cat "results/"${stem}".header" \
+		"results/"${stem}".vars" \
+	>${target}".build" \
+	&& mv ${target}".build" ${target} \
+	&& rm "results/"${stem}".vars" \
+	&& rm "results/"${stem}".header"
+
+
+#Get the header to he variants files
+results/%.header:
+	set -x
+	mkdir -p `dirname ${target}`
+        input=`echo $stem | rev  | cut -d "_" -f 2- | rev | sed "s/$/.bcf/"`
+	bcftools view -h \
+		"data/"${input} \
+	> ${target}".build" \
+	&& mv ${target}".build" ${target}
+
+
+#Subsample the variants in the input bcf file and generate the var files
+results/%.vars:
+	set -x
+	mkdir -p `dirname ${target}`
+	input=`echo $stem | rev  | cut -d "_" -f 2- | rev | sed "s/$/.bcf/"`
+	variants=`bcftools stats "data/"${input} \
+			| grep -m 1 "number of records" \
+			| awk '{print $6}'`
+	bcftools view -H \
+		"data/"${input} \
+	| shuf -r -n ${variants} \
+	| sort -t "	" -k 1,1n -k 2,2n \
+	> ${target}".build" \
+	&& mv ${target}".build" ${target}
