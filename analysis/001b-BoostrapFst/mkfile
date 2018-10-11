@@ -1,0 +1,59 @@
+## Alternative 1: Single target execution.
+##
+##
+## Alternative 2: Multiple target tandem execution.
+##      bin/targets | xargs mk
+##
+## Alternative 3: Multiple target parallel execution. NOTE: requires HTCondor.
+##      condor submit
+##
+## AUTHOR:
+##      Fernando Perez (fperez@inmegen.edu.mx) - 2018
+
+
+< ../config.mk
+
+#Execute eigensoft for each subset and generate the Fst distance matrix in phylip format
+results/%.dist.phylip:	results/%.par
+	set -x
+	mkdir -p `dirname ${target}`
+	smartpca \
+		-p "results/"${stem}".par" \
+	&& mv "results/"${stem}".dist.phylip.build" "results/"${stem}".dist.phylip"
+
+#Generate the parfiles to execute eigensoft
+results/%.par:	results/%.pedsnp	results/%.pedind
+	set -x
+	mkdir -p `dirname ${target}`
+	input=`echo $stem | rev  | cut -d "_" -f 2- | rev`
+	cat bin/par.test \
+	     | sed -r \
+	        -e "s#test.bed#data/${input}.bed#" \
+		-e "s#test.pedsnp#results/${stem}.pedsnp#" \
+		-e "s#91g.pedind#results/${stem}.pedind#" \
+		-e "s#numthreads: 1#numthreads: $NT#" \
+		-e "s#test.phylip#results/${stem}.dist.phylip.build#" \
+	> ${target}
+
+#Generate the pedind created from PLINK fam file. 
+results/%.pedind:
+	set -x
+	mkdir -p `dirname ${target}`
+        input=`echo $stem | rev  | cut -d "_" -f 2- | rev | sed "s/$/.fam/"`
+	awk 'BEGIN {x=2}; {x+=1} {printf $1"     "$2"     "$3" "$4" "$5" "$1"\n"}' \
+		"data/"${input} \
+		| sed "s/-//3" \
+	>${target}".build" \
+	&& mv ${target}".build" $target
+
+#Randomly select variants with replacement from the input bim file, this will generate random positions. The number of selected variants are the same that the number of variants in the input bim file.
+results/%.pedsnp:
+	set -x
+	mkdir -p `dirname ${target}`
+	input=`echo $stem | rev  | cut -d "_" -f 2- | rev | sed "s/$/.bim/"`
+	totalsnps=`wc -l "data/"$input | cut -d " " -f 1`
+	cat "data/"${input} \
+		| shuf -r -n $totalsnps \
+		| sort -t '	' -k 1,1n -k 4,4n \
+	>${target}".build" \
+	&& mv ${target}".build" ${target}

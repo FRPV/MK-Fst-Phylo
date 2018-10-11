@@ -1,0 +1,17 @@
+#! /bin/bash
+
+source ../config.mk
+
+#Define the base name in the input and then check if exist the fam files, bim and bed
+
+for beds  in `find -L data/ -name *.bed | sed "s/.bed//"`
+do
+  if  [ -f ${beds}".bed" ] && [ -f ${beds}".bim" ]  && [ -f ${beds}".fam" ]
+    then 
+      for i in `seq 1 $bots`
+	do
+	      bedsres=`echo $beds | sed "s#data/#results/#"`
+	      echo "${bedsres}_bs${i}.dist.phylip"
+      done
+  fi
+done
