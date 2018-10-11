@@ -12,7 +12,7 @@ The module construct Neighbor-Joining phylogeny trees in [newick format](http://
 
 ## Module description
 
-This module takes as input a a distance matrix in the Phylyp format. Those files most contains the suffix *.dist.phylip* . For each input file is executed a Neighbor-Joining phylogeny inference with the program *neighbor* from Phylip package. The user needs to give the sample that will be the out-group in the inference.
+This module takes as input a distance matrix in the Phylyp format. Those files most contains the suffix *.dist.phylip* . For each input file is executed a Neighbor-Joining phylogeny inference with the program *neighbor* from Phylip package. The user needs to give the sample that will be the out-group in the inference.
 
 ## Module Configuration
 
