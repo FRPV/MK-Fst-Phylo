@@ -1,0 +1,31 @@
+## USAGE:
+## Alternative 1: Single target execution.
+##
+##
+## Alternative 2: Multiple target tandem execution.
+##      bin/targets | xargs mk
+##
+## Alternative 3: Multiple target parallel execution. NOTE: requires HTCondor.
+##      condor submit
+##
+## AUTHOR:
+##      Fernando Perez (frpvillatoro@gmail.com) - 2018
+
+
+
+< ../config.mk
+
+#Convert VCF input files into PLINK-BED binary files
+
+results/%.bed:
+	set -x
+	mkdir -p `dirname ${target}`
+	plink1.9 \
+		--bcf "data/"${stem}".bcf" \
+		--make-bed \
+		--allow-extra-chr \
+		--out "results/"${stem}".build" \
+	&& for i in $(ls "results/"${stem}".build."*);\
+	   do name2=`echo ${i} | sed "s/.build//g"`;\
+	   mv ${i} ${name2};\
+	   done

@@ -1,0 +1,9 @@
+#! /bin/bash
+
+find -L data/ \
+	-maxdepth 1 \
+        -name '*.bcf'\
+| sed \
+	-e "s/data/results/g" \
+	-e 's#.bcf#.bed#'
+
