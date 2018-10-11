@@ -1,0 +1,7 @@
+genotypename: test.bed
+snpname: test.pedsnp
+indivname: 91g.pedind
+numoutlieriter: 0
+phylipoutname: test.phylip
+fstonly: YES
+numthreads: 1

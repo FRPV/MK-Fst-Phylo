@@ -1,0 +1,10 @@
+#! /bin/bash
+
+source ../config.mk
+
+#Define the base name in the input and then check if exist the fam files, bim and bed
+
+find -L data/ -name *.bed \
+	| sed -r \
+		-e "s/.bed/.dist.phylip/" \
+		-e "s#data/#results/#"
