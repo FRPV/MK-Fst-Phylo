@@ -1,4 +1,4 @@
-# Local-Ancestry
+# MK-Fst-Phylo
 
 ## Description
 
